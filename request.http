@@ -1,0 +1,60 @@
+POST http://localhost:3000/api/v1/users
+Content-Type: application/json
+
+{
+  "name": "fajar",
+  "email": "fajar@email.com",
+  "password": "passwordku",
+  "identityType": "KTP",
+  "identityNumber": "123670",
+  "address": "jalan teguh"
+}
+
+###
+GET http://localhost:3000/api/v1/users?limit=5&page=1
+
+
+###
+GET http://localhost:3000/api/v1/users/6
+
+###
+POST http://localhost:3000/api/v1/accounts
+Content-Type: application/json
+
+{
+    "balance": 30000,
+    "bankName": "BRI",
+    "bankAccountNumber": "019239433",
+    "userId": 1
+}
+
+
+###
+GET http://localhost:3000/api/v1/accounts?limit=3&page=1
+
+
+###
+GET http://localhost:3000/api/v1/accounts/1
+
+
+###
+POST http://localhost:3000/api/v1/transactions
+Content-Type: application/json
+
+{
+  "amount": 1000,
+  "sourceAccountId": 1,
+  "destinationAccountId": 2
+}
+
+
+###
+GET http://localhost:3000/api/v1/transactions?limit=2&page=1
+
+
+
+###
+GET http://localhost:3000/api/v1/transactions/1
+
+
+

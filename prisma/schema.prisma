@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Setiap User dapat memiliki banyak Akun (One-to-Many antara
+// Users dan Bank Accounts).
+// 2. Setiap Akun hanya dimiliki oleh satu User (Many-to-One antara
+// Bank Accounts dan Users).
+// 3. Setiap User hanya memiliki satu Profile (One-to-One antara
+// Users dan Profiles)
+// 4. Setiap Profile hanya dimiliki oleh satu User (One-to-One antara
+// Profiles dan Users)
+// 5. Setiap Akun dapat memiliki banyak Transaksi (Many-to-Many
+// antara Bank Accounts dan Bank Accounts melalui table
+// penampung Transactions).
+
+model User {
+  id          Int            @id @default(autoincrement())
+  name        String
+  email       String         @unique
+  password    String
+  bankAccount BankAccounts[]
+  profile     Profile?
+}
+
+model Profile {
+  id             Int    @id @default(autoincrement())
+  identityType   String 
+  identityNumber String @unique
+  address        String
+  userId         Int    @unique
+  users          User   @relation(fields: [userId], references: [id])
+}
+
+model BankAccounts {
+  id                Int            @id @default(autoincrement())
+  bankName          String
+  bankAccountNumber String         @unique
+  balance           Int
+  userId            Int
+  users             User           @relation(fields: [userId], references: [id])
+  transactionsFrom  Transactions[] @relation("fromAccount")
+  transactionsTo    Transactions[] @relation("toAccount")
+}
+
+model Transactions {
+  id                   Int          @id @default(autoincrement())
+  destinationAccountId Int
+  amount               Int
+  sourceAccountId      Int
+  sourceAccount        BankAccounts @relation("fromAccount", fields: [sourceAccountId], references: [id])
+  destinationAccount   BankAccounts @relation("toAccount", fields: [destinationAccountId], references: [id])
+}
+
