@@ -3,10 +3,10 @@ Content-Type: application/json
 
 {
   "name": "fajar",
-  "email": "fajar@email.com",
+  "email": "fajar123@email.com",
   "password": "passwordku",
   "identityType": "KTP",
-  "identityNumber": "123670",
+  "identityNumber": "312367061",
   "address": "jalan teguh"
 }
 
@@ -15,7 +15,7 @@ GET http://localhost:3000/api/v1/users?limit=5&page=1
 
 
 ###
-GET http://localhost:3000/api/v1/users/6
+GET http://localhost:3000/api/v1/users/17
 
 ###
 POST http://localhost:3000/api/v1/accounts
@@ -24,8 +24,8 @@ Content-Type: application/json
 {
     "balance": 30000,
     "bankName": "BRI",
-    "bankAccountNumber": "019239433",
-    "userId": 1
+    "bankAccountNumber": "0192139433",
+    "userId": 17
 }
 
 
@@ -43,8 +43,8 @@ Content-Type: application/json
 
 {
   "amount": 1000,
-  "sourceAccountId": 1,
-  "destinationAccountId": 2
+  "sourceAccountId": 5,
+  "destinationAccountId": 4
 }
 
 
