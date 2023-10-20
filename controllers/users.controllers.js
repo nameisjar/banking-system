@@ -1,7 +1,7 @@
 const { createUser, getAllUsers, getUsersDetail, createAccounts, getDetailAccounts, getAllAccounts } = require('../libs/users.libs');
 
 module.exports = {
-    createUser: async (req, res, next) => {
+    createUsers: async (req, res, next) => {
         try {
             let { name, email, password, identityType, identityNumber, address } = req.body;
 
