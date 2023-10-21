@@ -1,26 +1,38 @@
-const { createUser, getAllUsers, getUsersDetail, createAccounts, getDetailAccounts, getAllAccounts } = require('../libs/users.libs');
+const { createUser, getAllUsers, getUsersDetail, createAccounts, getAllAccounts, getDetailAccounts } = require('../libs/users.libs');
+const { getPagination } = require('../helpers/pagination');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 module.exports = {
     createUsers: async (req, res, next) => {
         try {
-            let { name, email, password, identityType, identityNumber, address } = req.body;
-
-            const user = await createUser(name, email, password, identityType, identityNumber, address);
-
-            res.status(201).json({
-                status: true,
-                message: "User Created",
-                data: user,
-            });
+            try {
+                const { name, email, password, identityType, identityNumber, address } = req.body;
+    
+                const user = await createUser(name, email, password, identityType, identityNumber, address);
+    
+                res.status(201).json({
+                    status: true,
+                    message: "User Created",
+                    data: user,
+                });
+            } catch (err) {
+                res.status(400).json({
+                    status: false,
+                    message: "Failed to create user",
+                    error: err.message, // Provide a more informative error message
+                });
+            }
         } catch (err) {
             next(err);
         }
+        
     },
     getAllUsers: async (req, res, next) => {
         try {
-            let { limit = 10, page = 1 } = req.query;
-            limit = Number(limit);
-            page = Number(page);
+            const { limit = 10, page = 1 } = req.query;
+            const parsedLimit = Number(limit);
+            const parsedPage = Number(page);
 
             const users = await getAllUsers();
 
@@ -28,40 +40,50 @@ module.exports = {
                 _count: { id: true }
             });
 
-            let pagination = getPagination(req, _count.id, page, limit);
+            const pagination = getPagination(req, _count.id, parsedPage, parsedLimit);
 
             res.status(200).json({
                 status: true,
-                message: 'OK',
+                message: 'Users retrieved successfully',
                 data: { pagination, users }
             });
         } catch (err) {
-            next(err);
+            res.status(400).json({
+                status: false,
+                message: "Failed to fetch users",
+                error: err.message,
+            });
         }
     },
-    getUsersDetail: async (req, res, next) => {
+    getUsersDetails: async (req, res, next) => {
         try {
-            let { id } = req.params;
-            const user = await getUsersDetail(Number(id));
-            if (!user) {
+            const { id } = req.params;
+            try {
+                const user = await getUsersDetail(Number(id));
+                res.status(200).json({
+                    status: true,
+                    message: 'User retrieved successfully',
+                    data: user,
+                });
+            } catch (err) {
                 return res.status(400).json({
                     status: false,
-                    message: 'Bad Request',
-                    data: 'no user found with id ' + id
+                    message: 'User not found',
+                    data: null,
                 });
             }
-            res.status(200).json({
-                status: true,
-                message: 'OK',
-                data: user,
-            });
+           
         } catch (err) {
-            next(err);
+            res.status(500).json({
+                status: false,
+                message: "Failed to fetch user details",
+                error: err.message,
+            });
         }
     },
-    createAccounts: async (req, res, next) => {
+    createAccount: async (req, res, next) => {
         try {
-            let { balance, bankName, bankAccountNumber, userId } = req.body;
+            const { balance, bankName, bankAccountNumber, userId } = req.body;
 
             const newAccount = await createAccounts(balance, bankName, bankAccountNumber, userId);
 
@@ -71,14 +93,18 @@ module.exports = {
                 data: newAccount,
             });
         } catch (err) {
-            next(err);
+            res.status(400).json({
+                status: false,
+                message: "Failed to create account",
+                error: err.message,
+            });
         }
     },
     getAllAccounts: async (req, res, next) => {
         try {
-            let { limit = 10, page = 1 } = req.query;
-            limit = Number(limit);
-            page = Number(page);
+            const { limit = 10, page = 1 } = req.query;
+            const parsedLimit = Number(limit);
+            const parsedPage = Number(page);
 
             const accounts = await getAllAccounts();
 
@@ -86,31 +112,37 @@ module.exports = {
                 _count: { id: true }
             });
 
-            let pagination = getPagination(req, _count.id, page, limit);
+            const pagination = getPagination(req, _count.id, parsedPage, parsedLimit);
 
             res.status(200).json({
                 status: true,
-                message: 'OK',
+                message: 'Accounts retrieved successfully',
                 data: { pagination, accounts }
             });
         } catch (err) {
-            next(err);
+            res.status(400).json({
+                status: false,
+                message: "Failed to fetch accounts",
+                error: err.message,
+            })
         }
     },
-    getDetailAccounts: async (req, res, next) => {
+    getAccountDetail: async (req, res, next) => {
         try {
-            let { id } = req.params;
+            const { id } = req.params;
             const account = await getDetailAccounts(Number(id));
+
             if (!account) {
                 return res.status(400).json({
                     status: false,
-                    message: 'Bad Request',
-                    data: 'no account found with id ' + id
+                    message: 'Account not found',
+                    data: null,
                 });
             }
+
             res.status(200).json({
                 status: true,
-                message: 'OK',
+                message: 'Account retrieved successfully',
                 data: account,
             });
         } catch (err) {

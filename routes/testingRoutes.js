@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const {createUsers, getAllUsers, getUsersDetail, createAccounts, getAllAccounts, getDetailAccounts} = require('../controllers/users.controllers');
-const {createTransaction, getAllTransaction, getDetailTransaction} = require('../controllers/transactions.controllers');
+const {createUsers, getAllUsers, getUsersDetails, createAccount, getAllAccounts, getAccountDetail} = require('../controllers/users.controllers');
+const {createTransaction, getAllTransactions, getDetailTransaction} = require('../controllers/transactions.controllers');
 
 
 router.post('/users', createUsers);
 router.get('/users', getAllUsers);
-router.get('/users/:id', getUsersDetail);
-router.post('/accounts', createAccounts);
+router.get('/users/:id', getUsersDetails);
+router.post('/accounts', createAccount);
 router.get('/accounts', getAllAccounts);
-router.get('/accounts/:id', getDetailAccounts);
+router.get('/accounts/:id', getAccountDetail);
 
 
 router.post('/transactions', createTransaction);
-router.get('/transactions', getAllTransaction);
+router.get('/transactions', getAllTransactions);
 router.get('/transactions/:id', getDetailTransaction)
 
 

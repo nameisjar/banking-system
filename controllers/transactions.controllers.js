@@ -1,64 +1,69 @@
 const { createTransaction, getAllTransaction, getDetailTransaction } = require('../libs/transactions.libs');
 
-
-
 module.exports = {
     createTransaction: async (req, res, next) => {
         try {
-            let { amount, destinationAccountId, sourceAccountId } = req.body;
-
-            let result = await createTransaction(sourceAccountId, destinationAccountId, amount);
+            const { sourceAccountId, destinationAccountId, amount } = req.body;
+            const transaction = await createTransaction(sourceAccountId, destinationAccountId, amount);
 
             res.status(201).json({
                 status: true,
-                message: "Transaksi Berhasil",
-                data: `Transfer Saldo sebesar ${result.amount} diterima dari ${result.sourceAccountId} ke ${result.destinationAccountId}`,
+                message: "Transaction Created",
+                data: transaction,
             });
         } catch (err) {
-            next(err);
+            console.error(err); // Log the error for debugging
+            res.status(400).json({
+                status: false,
+                message: "Failed to create transaction",
+                data: null,
+            });
         }
     },
-    getAllTransaction: async (req, res, next) => {
+    getAllTransactions: async (req, res, next) => {
         try {
-            let { limit = 10, page = 1 } = req.query;
-            limit = Number(limit);
-            page = Number(page);
-
-            let transactions = await getAllTransaction();
-
-            let { _count } = await prisma.transactions.aggregate({
-                _count: { id: true }
-            });
-
-            let pagination = getPagination(req, _count.id, page, limit);
+            const transactions = await getAllTransaction();
 
             res.status(200).json({
                 status: true,
-                message: 'OK',
-                data: { pagination, transactions }
+                message: 'Transactions retrieved successfully',
+                data: transactions,
             });
         } catch (err) {
-            next(err);
+            console.error(err);
+            res.status(400).json({
+                status: false,
+                message: "Failed to retrieve transactions",
+                data: null,
+            });
         }
     },
     getDetailTransaction: async (req, res, next) => {
         try {
-            let { id } = req.params;
-            let transaction = await getDetailTransaction(Number(id));
-            if (!transaction) {
-                return res.status(400).json({
+            const { id } = req.params;
+            try {
+                const transaction = await getDetailTransaction(Number(id));
+
+                res.status(200).json({
+                    status: true,
+                    message: 'Transaction retrieved successfully',
+                    data: transaction,
+                });
+            } catch (err) {
+                res.status(400).json({
                     status: false,
-                    message: 'Bad Request',
-                    data: 'no transaction found with id ' + id
+                    message: 'Transaction not found',
+                    data: null,
                 });
             }
-            res.status(200).json({
-                status: true,
-                message: 'OK',
-                data: transaction,
-            });
+            
         } catch (err) {
-            next(err);
+            console.error(err);
+            res.status(500).json({
+                status: false,
+                message: "Failed to retrieve transaction details",
+                data: null,
+            });
         }
-    }
+    },
 };

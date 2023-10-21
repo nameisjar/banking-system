@@ -44,11 +44,11 @@ module.exports = {
             throw err;
         }
     },
-    getUsersDetail: async (id) => {
+    getUsersDetail: async (userId) => {
         try {
             let user = await prisma.user.findUnique({
                 where: {
-                    id: id,
+                    id: userId,
                 },
             });
             if (!user) {
@@ -96,11 +96,11 @@ module.exports = {
             throw err;
         }
     },
-    getDetailAccounts: async (id) => {
+    getDetailAccounts: async (accountid) => {
         try {
             let account = await prisma.bankAccounts.findUnique({
                 where: {
-                    id: id,
+                    id: accountid,
                 },
             });
             if (!account) {

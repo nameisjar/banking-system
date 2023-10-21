@@ -1,68 +1,45 @@
 const app = require('../../app');
 const request = require('supertest');
-let user = {};
 
-describe('Integration Tests for Transaction API', function () {
-    // before(async function () {
-    //   // You can perform setup tasks here, e.g., database seeding
-    // });
-  
-    // after(async function () {
-    //   // You can perform cleanup tasks here, e.g., database cleanup
-    // });
-  
-    describe('POST /createTransaction', function () {
-      it('should create a new transaction', async function () {
-        // Your test data
-        let sourceAccountId = 1;
-        let destinationAccountId = 2;
-        let amount = 100;
-  
-        // Send a request to your Express app
-        let response = await request(app).post('/transactions').send({
-          sourceAccountId,
-          destinationAccountId,
-          amount,
-        });
-        user = response.body.data;
-  
-        expect(response.status).to.equal(201);
-        expect(response.body.status).to.be.true;
-        expect(response.body.message).to.equal('Transaksi Berhasil');
-        expect(response.body.data).to.have.property('id');
-        expect(response.body.data.sourceAccountId).to.equal(sourceAccountId);
-        expect(response.body.data.destinationAccountId).to.equal(destinationAccountId);
-        expect(response.body.data.amount).to.equal(amount);
-      });
+describe('Transaction API Integration Tests', () => {
+    test('POST /api/v1/transactions - Create a new transaction', async () => {
+        const transactionData = {
+            sourceAccountId: 4,
+            destinationAccountId: 5,
+            amount: 10,
+        };
+        const transaction = await request(app).post('/api/v1/transactions').send(transactionData);
+        expect(transaction.status).toBe(201);
+        expect(transaction.body.status).toBe(true);
+        expect(transaction.body.message).toBe('Transaction Created');
+        expect(transaction.body.data).toHaveProperty('id');
     });
-  
-    describe('GET /getAllTransaction', function () {
-      it('should retrieve all transactions', async function () {
-        // Send a request to your Express app
-        let response = await request(app).get('/transactions');
-  
-        expect(response.status).to.equal(200);
-        expect(response.body.status).to.be.true;
-        expect(response.body.message).to.equal('OK');
-        expect(response.body.data).to.have.property('pagination');
-        expect(response.body.data).to.have.property('transactions');
-        expect(response.body.data.transactions).to.be.an('array');
-      });
+
+    test('GET /api/v1/transactions - Get all transactions', async () => {
+        const transactions = await request(app).get('/api/v1/transactions');
+        expect(transactions.status).toBe(200);
+        expect(transactions.body.status).toBe(true);
+        expect(transactions.body.message).toBe('Transactions retrieved successfully');
+        
     });
-  
-    describe('GET /getDetailTransaction/:id', function () {
-      it('should retrieve details of a transaction', async function () {
-        // Your test data
-        let transactionId = 1;
-  
-        // Send a request to your Express app
-        let response = await request(app).get(`/transactions/${transactionId}`);
-  
-        expect(response.status).to.equal(200);
-        expect(response.body.status).to.be.true;
-        expect(response.body.message).to.equal('OK');
-        expect(response.body.data).to.have.property('id');
-        expect(response.body.data.id).to.equal(transactionId);
-      });
-    });
-  });
+
+    test('GET /api/v1/transactions/:id - Get transaction details by ID', async () => {
+        const transactionId = 1;
+        const transaction = await request(app).get(`/api/v1/transactions/${transactionId}`);
+        expect(transaction.status).toBe(200);
+        expect(transaction.body.status).toBe(true);
+        expect(transaction.body.message).toBe('Transaction retrieved successfully');
+        expect(transaction.body.data.id).toBe(transactionId);
+    })
+
+    test('GET /api/v1/transactions/:id - Get transaction details by invalid ID', async () => {
+        const invalidTransactionId = 999999;
+        const transaction = await request(app).get(`/api/v1/transactions/${invalidTransactionId}`);
+        expect(transaction.status).toBe(400);
+        expect(transaction.body.status).toBe(false);
+        expect(transaction.body.message).toBe('Transaction not found');
+        expect(transaction.body.data).toBe(null);
+    })
+    
+})
+

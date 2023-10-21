@@ -42,9 +42,9 @@ POST http://localhost:3000/api/v1/transactions
 Content-Type: application/json
 
 {
-  "amount": 1000,
-  "sourceAccountId": 5,
-  "destinationAccountId": 4
+  "amount": 100,
+  "sourceAccountId": 4,
+  "destinationAccountId": 5
 }
 
 
@@ -55,6 +55,35 @@ GET http://localhost:3000/api/v1/transactions?limit=2&page=1
 
 ###
 GET http://localhost:3000/api/v1/transactions/1
+
+
+
+# jwt token autentikasi
+###
+POST http://localhost:3000/api/v1/auth/register
+Content-Type: application/json
+
+{
+    "name":"niko",
+    "email":"niko@mail.com",
+    "password":"niko123",
+    "password_confirmation":"niko123"
+}
+
+
+###
+POST http://localhost:3000/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email":"niko@mail.com",
+    "password":"niko123"
+}
+
+
+###
+GET http://localhost:3000/api/v1/auth/whoami
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjcsImlhdCI6MTY5Nzc5MzM3NH0.8t_mPZEt40LJeONcaefM6DCLp0hT7c8z1C45l9mWkcc
 
 
 
