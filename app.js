@@ -3,6 +3,7 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const app = express();
 const logger = require('morgan');
+const cors = require('cors');
 // const morgan = require('morgan');
 const {PORT = 3000} = process.env;
 const endpoint = require('./routes/enpoint');
@@ -11,19 +12,26 @@ const testingRoutes = require('./routes/testingRoutes');
 // authenticate
 const authRouter = require('./routes/auth.routes');
 
+
+
+//untuk menajalankan api dokumentasi
 const YAML = require('yaml');
-
-
 const fs = require("fs");
 const file = fs.readFileSync('./swagger.yaml', 'utf8');
 const swaggerDocument = YAML.parse(file);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(cors());
+
 
 app.use(logger('dev'));
 // app.use(morgan('dev'));
 app.use(express.json());
-// app.use("/api/v1",endpoint);
-app.use("/api/v1", testingRoutes);
+app.use("/api/v1",endpoint);
+
+// dinyalakan ketika testing
+// app.use("/api/v1", testingRoutes);
+
+// autentikasi
 // app.use('/api/v1/auth', authRouter);
 
 
@@ -43,9 +51,9 @@ app.use("/api/v1", testingRoutes);
 //     })
 // })
 
-// testing
-module.exports = app;
+// dinyalakan ketika testing
+// module.exports = app;
 
-// app.listen(PORT, () => {
-//     console.log(`Example app listening at http://localhost:${PORT}`);
-// });
+app.listen(PORT, () => {
+    console.log(`Example app listening at http://localhost:${PORT}`);
+});

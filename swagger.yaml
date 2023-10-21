@@ -2,9 +2,10 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: Banking-System API
-basePath: '/'
+basePath: '/api/v1'
 schemes:
   - http
+host: localhost:3000
 consumes:
   - application/json
 produces:
