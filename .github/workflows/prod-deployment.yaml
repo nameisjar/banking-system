@@ -1,4 +1,4 @@
-name: Deploy to railway environment (development)
+name: Deploy to railway environment (production)
 
 on:
   push:
@@ -23,12 +23,7 @@ jobs:
       - name: Install Railway CLI
         run: npm install -g @railway/cli
 
-      - name: Run Migration
-        run: railway run --service ${{ secrets.RAILWAY_SERVICE_ID }} migrate
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
-
       - name: deploy to Railway
         run: railway up --service ${{ secrets.RAILWAY_SERVICE_ID }}
         env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_DEV_TOKEN }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_PROD_TOKEN }}
