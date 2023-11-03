@@ -34,6 +34,15 @@ app.use("/api/v1",endpoint);
 // autentikasi
 // app.use('/api/v1/auth', authRouter);
 
+app.get('/', (req, res) => {
+    res.status(200).json({
+        status: true,
+        message: "Welcome",
+        error: null,
+        data: null
+    })
+})
+
 
 // app.use( (req, res, next) => {
 //     res.status(404).json({
