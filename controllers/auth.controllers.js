@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET_KEY } = process.env;
+const axios = require('axios');
 
 module.exports = {
     register: async (req, res, next) => {
@@ -80,12 +81,18 @@ module.exports = {
         }
     },
 
-    whoami: (req, res, next) => {
-        return res.status(200).json({
-            status: true,
-            message: 'OK',
-            err: null,
-            data: { user: req.user }
-        });
+    whoami: async (req, res, next) => {
+
+        try {
+            let data = await axios.get();
+            return res.status(200).json({
+                status: true,
+                message: 'OK',
+                err: null,
+                data: { user: req.user, data }
+            });
+        } catch (err) {
+            next(err);
+        }
     }
 };

@@ -3,9 +3,10 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const app = express();
 const logger = require('morgan');
+const Sentry = require('@sentry/node');
 const cors = require('cors');
 // const morgan = require('morgan');
-const {PORT = 3000} = process.env;
+const {PORT = 3000, SENTRY_DSN, ENV} = process.env;
 const endpoint = require('./routes/enpoint');
 // tsting
 const testingRoutes = require('./routes/testingRoutes');
@@ -26,6 +27,19 @@ app.use(cors());
 app.use(logger('dev'));
 // app.use(morgan('dev'));
 app.use(express.json());
+
+Sentry.init({
+    dsn: SENTRY_DSN,
+    integrations: [
+      // enable HTTP calls tracing
+      new Sentry.Integrations.Http({ tracing: true }),
+      // enable Express.js middleware tracing
+      new Sentry.Integrations.Express({ app }),
+    ],
+    // Performance Monitoring
+    tracesSampleRate: 1.0,
+    environment: ENV
+  });
 app.use("/api/v1",endpoint);
 
 // dinyalakan ketika testing
@@ -33,6 +47,9 @@ app.use("/api/v1",endpoint);
 
 // autentikasi
 // app.use('/api/v1/auth', authRouter);
+
+// The error handler must be registered before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
 
 app.get('/', (req, res) => {
     res.status(200).json({
@@ -44,21 +61,21 @@ app.get('/', (req, res) => {
 })
 
 
-// app.use( (req, res, next) => {
-//     res.status(404).json({
-//         status: 404,
-//         message: "Not Found",
-//         data: null
-//     })
-// })
+app.use( (req, res, next) => {
+    res.status(404).json({
+        status: 404,
+        message: "Not Found",
+        data: null
+    })
+})
 
-// app.use( (err, req, res, next) => {
-//     res.status(500).json({
-//         status: 500,
-//         message: "Internal Server Error",
-//         data: err.message
-//     })
-// })
+app.use( (err, req, res, next) => {
+    res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
+        data: err.message
+    })
+})
 
 // dinyalakan ketika testing
 // module.exports = app;
